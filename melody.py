@@ -1,3 +1,4 @@
+from __future__ import division
 import config
 #import random
 from numpy import random
@@ -37,8 +38,8 @@ def generate():
         rythm[i] = rythm[i] * config.patternLen
 
     if len(rythm) > 0:
-        melody.append(62)
+        melody.append(0)
 
     for i, size in enumerate(rythm):
-        if i == 1: continue
-        melody.append(62)
+        if i == 0: continue
+        melody.append(melody[i-1]+random.choice(config.jumps, p=config.jumpScaleWeights[melody[i-1]]))

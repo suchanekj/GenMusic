@@ -19,6 +19,7 @@ def write(melodies, rythms):
     MyMIDI.addTempo(track, time, tempo)
 
     for i, pitch in enumerate(melodies[0]):
+        melodies[0][i] = melodies[0][i] + config.tone0
         MyMIDI.addNote(track, channel, melodies[0][i], time, rythms[0][i], volume)
         time += rythms[0][i]
         print rythms[0][i]
