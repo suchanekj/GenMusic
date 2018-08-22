@@ -3,7 +3,8 @@
 from midiutil import MIDIFile
 import config
 
-def write(melodies, rythms):
+
+def write(melodies, rhythms):
     degrees  = [60, 62, 64, 65, 67, 69, 71, 72]  # MIDI note number
     track    = 0
     channel  = 0
@@ -20,9 +21,9 @@ def write(melodies, rythms):
 
     for i, pitch in enumerate(melodies[0]):
         melodies[0][i] = melodies[0][i] + config.tone0
-        MyMIDI.addNote(track, channel, melodies[0][i], time, rythms[0][i], volume)
-        time += rythms[0][i]
-        print rythms[0][i]
+        MyMIDI.addNote(track, channel, melodies[0][i], time, rhythms[0][i], volume)
+        time += rhythms[0][i]
+        # print rhythms[0][i]
 
     with open("output.mid", "wb") as output_file:
         MyMIDI.writeFile(output_file)

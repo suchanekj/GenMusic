@@ -1,45 +1,80 @@
 from __future__ import division
+from operator import mul
 import config
-#import random
+# import random
 from numpy import random
 
-"""
-TODO
-fitovani
-    rytmus:
-        delka na zacatku
-        pocet rozdeleni ruznych typu
-        pocatek a nasobic pravdepodobnosti zvoleni do vycerpani
-    melodie:
-evoluce
-neuronka
-    predat tomu radek tonu a radek delek a na to dat treba 2x3 a dal delat v 1d, nakonec udelat globalAveragePooling \
-    (vyhodi prumernou hodnotu na cele vrstve do jednoho neuronu na konecne vrstve) a z toho vzit kvalitu sklatby
-"""
+patterns = []
+composition = []
 
-rythm = []
+rhythms = []
+melodies = []
+
+rhythm = []
 melody = []
 
-def generate():
-    random.seed()
+
+def generate_rhythm():
+    global rhythm
+    rhythm = []
     for i in range(config.patternLen):
-        rythm.append(1.0/config.patternLen)
-    while len(rythm) < config.patternNoteNum:
+        rhythm.append(1.0 / config.patternLen)
+    while len(rhythm) < config.patternNoteNum:
         chance = random.random()
-        choice = random.choice(range(len(rythm)), p=rythm)
+        choice = random.choice(range(len(rhythm)), p=rhythm)
+        if rhythm[choice] <= config.minNoteLen: continue
         if chance < config.rythm_split_11:
-            rythm.insert(choice+1, rythm[choice] / 2.0)
-            rythm[choice] = rythm[choice] / 2.0
+            rhythm.insert(choice + 1, rhythm[choice] / 2.0)
+            rhythm[choice] = rhythm[choice] / 2.0
         elif chance < config.rythm_split_31:
-            rythm.insert(choice+1, rythm[choice] / 4.0)
-            rythm[choice] = rythm[choice] * 3.0 / 4.0
+            rhythm.insert(choice + 1, rhythm[choice] / 4.0)
+            rhythm[choice] = rhythm[choice] * 3.0 / 4.0
 
-    for i in range(len(rythm)):
-        rythm[i] = rythm[i] * config.patternLen
+    for i in range(len(rhythm)):
+        rhythm[i] = rhythm[i] * config.patternLen
 
-    if len(rythm) > 0:
+
+def generate_melody():
+    global melody
+    melody = []
+    if len(rhythm) > 0:
         melody.append(0)
 
-    for i, size in enumerate(rythm):
+    for i, size in enumerate(rhythm):
         if i == 0: continue
-        melody.append(melody[i-1]+random.choice(config.jumps, p=config.jumpScaleWeights[melody[i-1]]))
+        melody.append(melody[i - 1] + random.choice(config.jumps, p=config.jumpScaleWeights[melody[i - 1]]))
+
+
+def generate_patterns():
+    for i in range(config.patternRhythmNum):
+        generate_rhythm()
+        rhythms.append(rhythm)
+        for j in range(config.patternMelodyNum):
+            generate_melody()
+            melodies.append(melody)
+            patterns.append([len(rhythms) - 1, len(melodies) - 1])
+
+
+def generate():
+    global melody
+    global rhythm
+    random.seed()
+    generate_patterns()
+    melody = []
+    rhythm = []
+    for i in range(config.overallLen):
+        patternWeights = [[(config.sameRhythmWeight[b + 1] if patterns[a][0] == patterns[composition[-(b+1)]][0] else
+                               config.sameRhythmWeight[0]) * (
+                               config.sameMelodyWeight[b + 1] if patterns[a][1] == patterns[composition[-(b+1)]][1] else
+                               config.sameMelodyWeight[0])
+                               for b in range(min(len(config.sameRhythmWeight), len(composition) + 1) - 1)]
+                               for a in range(len(patterns))]
+        for j in range(len(patternWeights)):
+            patternWeights[j] = reduce(mul, patternWeights[j], 1)
+        patternWeightsSum = sum(patternWeights)
+        for j in range(len(patternWeights)):
+            patternWeights[j] = patternWeights[j] / patternWeightsSum
+        composition.append(random.choice(range(len(patterns)), p=patternWeights))
+        rhythm.extend(rhythms[patterns[composition[-1]][0]])
+        melody.extend(melodies[patterns[composition[-1]][1]])
+    print composition

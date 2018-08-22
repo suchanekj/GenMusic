@@ -5,21 +5,26 @@ channels = 1
 instruments = [1]
 rythm_split_11 = 0.8
 rythm_split_31 = 0.2 # must add up to one
-patternLen = 20
-patternNoteNum = patternLen * 5
+patternLen = 4
+patternNoteNum = patternLen * 4
 scaleWeights = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
-jumpWeights = [  1,   1,   1,  1,  1,  1,  1,  2,  2,  2,  2,  1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1,  1,  1,  1]
+jumpWeights = [  1,   1,   1,  1,  1,  1,  2,  2,  3,  3,  4,  4, 1, 4, 4, 3, 3, 2, 2, 1, 1, 1,  1,  1,  1]
 minTone = -12
 maxTone = 12
+patternRhythmNum = 3
+patternMelodyNum = 3
+overallLen = 12  # in number of patterns
+sameRhythmWeight = [1, 1, 3, 2]  # no, as 1 ago, as 2 ago..., first one MUST be 1
+sameMelodyWeight = [1, 0, 2, 1]  # no, as 1 ago, as 2 ago..., must be same length as sameRhythmWeight
 
 # constants
 tone0 = 60
 jumps =       [-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 scaleLen = len(scaleWeights)
+minNoteLen = 1/16
 
 
-
-#edit the propabilities to sum to 1
+# edit the probabilities to sum to 1
 # jumpWeightsSum = sum(jumpWeights)
 # for i in range(len(jumpWeights)):
 #     jumpWeights[i] = jumpWeights[i] / jumpWeightsSum
@@ -29,8 +34,7 @@ scaleLen = len(scaleWeights)
 #     scaleWeights[i] = scaleWeights[i] / scaleWeightsSum
 
 
-
-#create jump propabilities
+# create jump probabilities
 scaleWeights3 = scaleWeights + scaleWeights + scaleWeights
 jumpScaleWeights = []
 for i in range(maxTone - minTone + 1):
