@@ -18,15 +18,15 @@ def generate_rhythm():
     global rhythm
     rhythm = []
     for i in range(config.patternLen):
-        rhythm.append(1.0 / config.patternLen)
-    while len(rhythm) < config.patternNoteNum:
+        rhythm.append(1.0)
+    while len(rhythm) < config.patternNoteNumMul * config.patternLen:
         chance = random.random()
         choice = random.choice(range(len(rhythm)), p=rhythm)
         if rhythm[choice] <= config.minNoteLen: continue
-        if chance < config.rythm_split_11:
+        if chance < config.rhythm_split_11:
             rhythm.insert(choice + 1, rhythm[choice] / 2.0)
             rhythm[choice] = rhythm[choice] / 2.0
-        elif chance < config.rythm_split_31:
+        else:
             rhythm.insert(choice + 1, rhythm[choice] / 4.0)
             rhythm[choice] = rhythm[choice] * 3.0 / 4.0
 
@@ -62,11 +62,11 @@ def generate():
     generate_patterns()
     melody = []
     rhythm = []
-    for i in range(config.overallLen):
-        patternWeights = [[(config.sameRhythmWeight[b + 1] if patterns[a][0] == patterns[composition[-(b+1)]][0] else
-                               config.sameRhythmWeight[0]) * (
-                               config.sameMelodyWeight[b + 1] if patterns[a][1] == patterns[composition[-(b+1)]][1] else
-                               config.sameMelodyWeight[0])
+    for i in range(int(config.overallLen / config.patternLen)):
+        patternWeights = [[(config.sameRhythmWeight[b] if patterns[a][0] == patterns[composition[-(b+1)]][0] else
+                               1) * (
+                               config.sameMelodyWeight[b] if patterns[a][1] == patterns[composition[-(b+1)]][1] else
+                               1)
                                for b in range(min(len(config.sameRhythmWeight), len(composition) + 1) - 1)]
                                for a in range(len(patterns))]
         for j in range(len(patternWeights)):
@@ -78,3 +78,4 @@ def generate():
         rhythm.extend(rhythms[patterns[composition[-1]][0]])
         melody.extend(melodies[patterns[composition[-1]][1]])
     print composition
+

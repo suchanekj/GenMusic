@@ -76,7 +76,7 @@ def rewrite(source, target):
 def makecorpus():
     if not os.path.exists("pianotxt/"):
         os.makedirs("pianotxt/")
-    for i in range(322):
+    for i in range(len([name for name in os.listdir('pianomidi/') if os.path.isfile('pianomidi/' + name)])):
         rewrite("pianomidi/%d.mid" % (i+1), "pianotxt/")
         for j in range(int(random.random()*10) + 1): makerandom("pianotxt/")
         print i
