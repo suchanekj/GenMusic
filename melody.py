@@ -18,11 +18,11 @@ def generate_rhythm():
     global rhythm
     rhythm = []
     for i in range(config.patternLen):
-        rhythm.append(1.0)
+        rhythm.append(1.0 / config.patternLen)
     while len(rhythm) < config.patternNoteNumMul * config.patternLen:
         chance = random.random()
         choice = random.choice(range(len(rhythm)), p=rhythm)
-        if rhythm[choice] <= config.minNoteLen: continue
+        if rhythm[choice] * config.patternLen <= config.minNoteLen: continue
         if chance < config.rhythm_split_11:
             rhythm.insert(choice + 1, rhythm[choice] / 2.0)
             rhythm[choice] = rhythm[choice] / 2.0

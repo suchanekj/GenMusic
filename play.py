@@ -49,10 +49,10 @@ def autoplay():
     try:
 
         # Make a list of .mid files in the current directory and all subdirectories
-        matches = []
-        for root, dirnames, filenames in os.walk("./"):
-            for filename in fnmatch.filter(filenames, '*.mid'):
-                matches.append(os.path.join(root, filename))
+        matches = ["output.mid"]
+        # for root, dirnames, filenames in os.walk("./"):
+        #     for filename in fnmatch.filter(filenames, '*.mid'):
+        #         matches.append(os.path.join(root, filename))
 
         # Play each song in the list
         for song in matches:

@@ -11,13 +11,13 @@ def listToConfig(x):
     config.rhythm_split_11 = config.rhythm_split_11Type(config.rhythm_split_11Range[0]
                                                         + config.rhythm_split_11Range[1] * x[0])
     config.patternNoteNumMul = config.patternNoteNumMulType(config.patternNoteNumMulRange[0]
-                                                     + config.patternNoteNumMulRange[1] * x[1])
+                                                            + config.patternNoteNumMulRange[1] * x[1])
     for i in range(len(config.scaleWeights)):
         config.scaleWeights[i] = config.scaleWeightsType(config.scaleWeightsRange[0]
-                                                     + config.scaleWeightsRange[1] * x[2 + i])
+                                                         + config.scaleWeightsRange[1] * x[2 + i])
     for i in range(len(config.jumpWeights)):
         config.jumpWeights[i] = config.jumpWeightsType(config.jumpWeightsRange[0]
-                                                     + config.jumpWeightsRange[1] * x[14 + i])
+                                                       + config.jumpWeightsRange[1] * x[14 + i])
     config.minTone = config.minToneType(config.minToneRange[0] + config.minToneRange[1] * x[39])
     config.maxTone = config.maxToneType(config.maxToneRange[0] + config.maxToneRange[1] * x[40])
     config.patternRhythmNum = config.patternRhythmNumType(config.patternRhythmNumRange[0]
@@ -26,10 +26,10 @@ def listToConfig(x):
                                                           + config.patternMelodyNumRange[1] * x[42])
     for i in range(len(config.sameRhythmWeight)):
         config.sameRhythmWeight[i] = config.sameRhythmWeightType(config.sameRhythmWeightRange[0]
-                                                     + config.sameRhythmWeightRange[1] * x[43 + i])
+                                                                 + config.sameRhythmWeightRange[1] * x[43 + i])
     for i in range(len(config.sameMelodyWeight)):
         config.sameMelodyWeight[i] = config.sameMelodyWeightType(config.sameMelodyWeightRange[0]
-                                                     + config.sameMelodyWeightRange[1] * x[46 + i])
+                                                                 + config.sameMelodyWeightRange[1] * x[46 + i])
 
     config.init()
 
@@ -53,6 +53,8 @@ toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.2, indpb=0.1)
 toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("evaluate", evaluate)
 
+if not os.path.exists("geneticresults/"):
+    os.makedirs("geneticresults/")
 
 def main():
     pop = toolbox.population(n=50)

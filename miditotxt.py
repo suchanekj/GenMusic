@@ -83,6 +83,3 @@ def makecorpus():
     f = open("pianotxt/quality.txt", "w+")
     for i in quality:
         f.write("%d\n" % i)
-
-
-makecorpus()
