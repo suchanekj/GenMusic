@@ -62,9 +62,39 @@ minNoteLen = 1/16
 rhythm_split_31 = 1 - rhythm_split_11
 jumpScaleWeights = []
 
+IND_SIZE = 2+12+12+1+12+4+6
+
+def listToConfig(x):
+    rhythm_split_11 = rhythm_split_11Type(rhythm_split_11Range[0]
+                                                        + rhythm_split_11Range[1] * x[0])
+    patternNoteNumMul = patternNoteNumMulType(patternNoteNumMulRange[0]
+                                                            + patternNoteNumMulRange[1] * x[1])
+    for i in range(len(scaleWeights)):
+        scaleWeights[i] = scaleWeightsType(scaleWeightsRange[0]
+                                                         + scaleWeightsRange[1] * x[2 + i])
+    for i in range(len(jumpWeights)):
+        jumpWeights[i] = jumpWeightsType(jumpWeightsRange[0]
+                                                       + jumpWeightsRange[1] * x[14 + i])
+    minTone = minToneType(minToneRange[0] + minToneRange[1] * x[39])
+    maxTone = maxToneType(maxToneRange[0] + maxToneRange[1] * x[40])
+    patternRhythmNum = patternRhythmNumType(patternRhythmNumRange[0]
+                                                          + patternRhythmNumRange[1] * x[41])
+    patternMelodyNum = patternMelodyNumType(patternMelodyNumRange[0]
+                                                          + patternMelodyNumRange[1] * x[42])
+    for i in range(len(sameRhythmWeight)):
+        sameRhythmWeight[i] = sameRhythmWeightType(sameRhythmWeightRange[0]
+                                                                 + sameRhythmWeightRange[1] * x[43 + i])
+    for i in range(len(sameMelodyWeight)):
+        sameMelodyWeight[i] = sameMelodyWeightType(sameMelodyWeightRange[0]
+                                                                 + sameMelodyWeightRange[1] * x[46 + i])
+
+    init()
+
 # create jump probabilities
 def init():
     global jumpScaleWeights
+    rhythm_split_31 = 1 - rhythm_split_11
+    jumpScaleWeights = []
     scaleWeights3 = scaleWeights + scaleWeights + scaleWeights
     for i in range(maxTone - minTone + 1):
         jumpScaleWeights.append([a*b*(1 if i + c >= 0 and i + c + minTone <= maxTone else 0) for a,b,c in

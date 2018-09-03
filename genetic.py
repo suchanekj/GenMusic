@@ -4,38 +4,12 @@ from deap import creator, base, tools, algorithms
 import os
 import config
 
-IND_SIZE = 2+12+12+1+12+4+6
 
 
-def listToConfig(x):
-    config.rhythm_split_11 = config.rhythm_split_11Type(config.rhythm_split_11Range[0]
-                                                        + config.rhythm_split_11Range[1] * x[0])
-    config.patternNoteNumMul = config.patternNoteNumMulType(config.patternNoteNumMulRange[0]
-                                                            + config.patternNoteNumMulRange[1] * x[1])
-    for i in range(len(config.scaleWeights)):
-        config.scaleWeights[i] = config.scaleWeightsType(config.scaleWeightsRange[0]
-                                                         + config.scaleWeightsRange[1] * x[2 + i])
-    for i in range(len(config.jumpWeights)):
-        config.jumpWeights[i] = config.jumpWeightsType(config.jumpWeightsRange[0]
-                                                       + config.jumpWeightsRange[1] * x[14 + i])
-    config.minTone = config.minToneType(config.minToneRange[0] + config.minToneRange[1] * x[39])
-    config.maxTone = config.maxToneType(config.maxToneRange[0] + config.maxToneRange[1] * x[40])
-    config.patternRhythmNum = config.patternRhythmNumType(config.patternRhythmNumRange[0]
-                                                          + config.patternRhythmNumRange[1] * x[41])
-    config.patternMelodyNum = config.patternMelodyNumType(config.patternMelodyNumRange[0]
-                                                          + config.patternMelodyNumRange[1] * x[42])
-    for i in range(len(config.sameRhythmWeight)):
-        config.sameRhythmWeight[i] = config.sameRhythmWeightType(config.sameRhythmWeightRange[0]
-                                                                 + config.sameRhythmWeightRange[1] * x[43 + i])
-    for i in range(len(config.sameMelodyWeight)):
-        config.sameMelodyWeight[i] = config.sameMelodyWeightType(config.sameMelodyWeightRange[0]
-                                                                 + config.sameMelodyWeightRange[1] * x[46 + i])
-
-    config.init()
 
 
 def evaluate(individual):
-    return sum(individual)/IND_SIZE,
+    return sum(individual)/config.IND_SIZE,
 
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -44,7 +18,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 toolbox.register("attribute", random.random)
 toolbox.register("individual", tools.initRepeat, creator.Individual,
-                 toolbox.attribute, n=IND_SIZE)
+                 toolbox.attribute, n=config.IND_SIZE)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 
@@ -115,7 +89,7 @@ def autorun():
     for i in maxIndividual:
         f.write("%f\n" % i)
 
-    listToConfig(maxIndividual)
+    config.listToConfig(maxIndividual)
     print "Genetics done"
 
 
@@ -127,5 +101,5 @@ def load(i):
     else:
         f = open("geneticresults/%d.txt" % i, "r")
     indidvidual = f.read().splitlines()
-    listToConfig(indidvidual)
+    config.listToConfig(indidvidual)
 

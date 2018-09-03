@@ -58,10 +58,19 @@ def generate_patterns():
 def generate():
     global melody
     global rhythm
-    random.seed()
-    generate_patterns()
+    global melodies
+    global rhythms
+    global composition
+    global patterns
     melody = []
     rhythm = []
+    rhythms = []
+    melodies = []
+    composition = []
+    patterns = []
+    random.seed()
+    generate_patterns()
+
     for i in range(int(config.overallLen / config.patternLen)):
         patternWeights = [[(config.sameRhythmWeight[b] if patterns[a][0] == patterns[composition[-(b+1)]][0] else
                                1) * (
@@ -75,7 +84,11 @@ def generate():
         for j in range(len(patternWeights)):
             patternWeights[j] = patternWeights[j] / patternWeightsSum
         composition.append(random.choice(range(len(patterns)), p=patternWeights))
+        # for afs in rhythms:
+        #     print sum(afs)
+        print sum(rhythms[patterns[composition[-1]][0]])
         rhythm.extend(rhythms[patterns[composition[-1]][0]])
         melody.extend(melodies[patterns[composition[-1]][1]])
+        print sum(rhythms[patterns[composition[-1]][0]])
     print composition
 
