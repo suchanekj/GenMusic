@@ -1,18 +1,8 @@
-from __future__ import division
-from operator import mul
-import config
-# import random
 from numpy import random
-
-patterns = []
-composition = []
-
-rhythms = []
-melodies = []
-
-rhythm = []
-melody = []
-
+from numpy import prod
+import copy
+import time
+import config
 
 def generate_rhythm():
     global rhythm
@@ -48,7 +38,7 @@ def generate_melody():
 def generate_patterns():
     for i in range(config.patternRhythmNum):
         generate_rhythm()
-        rhythms.append(rhythm)
+        rhythms.append(copy.deepcopy(rhythm))
         for j in range(config.patternMelodyNum):
             generate_melody()
             melodies.append(melody)
@@ -62,6 +52,8 @@ def generate():
     global rhythms
     global composition
     global patterns
+    global tim
+    tim -= time.process_time()
     melody = []
     rhythm = []
     rhythms = []
@@ -70,6 +62,8 @@ def generate():
     patterns = []
     random.seed()
     generate_patterns()
+    melody = []
+    rhythm = []
 
     for i in range(int(config.overallLen / config.patternLen)):
         patternWeights = [[(config.sameRhythmWeight[b] if patterns[a][0] == patterns[composition[-(b+1)]][0] else
@@ -79,16 +73,17 @@ def generate():
                                for b in range(min(len(config.sameRhythmWeight), len(composition) + 1) - 1)]
                                for a in range(len(patterns))]
         for j in range(len(patternWeights)):
-            patternWeights[j] = reduce(mul, patternWeights[j], 1)
+            patternWeights[j] = prod(patternWeights[j])
         patternWeightsSum = sum(patternWeights)
         for j in range(len(patternWeights)):
             patternWeights[j] = patternWeights[j] / patternWeightsSum
         composition.append(random.choice(range(len(patterns)), p=patternWeights))
         # for afs in rhythms:
         #     print sum(afs)
-        print sum(rhythms[patterns[composition[-1]][0]])
+        # print sum(rhythms[patterns[composition[-1]][0]])
         rhythm.extend(rhythms[patterns[composition[-1]][0]])
         melody.extend(melodies[patterns[composition[-1]][1]])
-        print sum(rhythms[patterns[composition[-1]][0]])
-    print composition
+        # print sum(rhythms[patterns[composition[-1]][0]])
+    print(composition)
+    tim += time.process_time()
 

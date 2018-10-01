@@ -1,5 +1,3 @@
-from __future__ import division
-
 # fittables
 rhythm_split_11 = 0.8
 patternNoteNumMul = 4
@@ -48,6 +46,12 @@ tone0 = 60
 jumps =       [-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 scaleLen = len(scaleWeights)
 minNoteLen = 1/16
+notetomiditime = 60
+geneticPopulationSize = 100
+geneticCXPB = 0.5
+geneticMUTPB = 0.2
+geneticNGEN = 100
+evaluationToAverage = 5
 
 
 # edit the probabilities to sum to 1

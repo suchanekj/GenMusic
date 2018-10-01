@@ -34,78 +34,78 @@ def play_music(music_file):
 
     pygame.mixer.music.play()
 
-def autoplay():
-    # Init pygame playback
-    bitsize = -16  # unsigned 16 bit
-    pygame.mixer.init(sample_rate, bitsize, channels, buffer)
 
-    # optional volume 0 to 1.0
-    pygame.mixer.music.set_volume(1.0)
+# Init pygame playback
+bitsize = -16  # unsigned 16 bit
+pygame.mixer.init(sample_rate, bitsize, channels, buffer)
 
-    # Init pyAudio
-    format = pyaudio.paInt16
-    audio = pyaudio.PyAudio()
+# optional volume 0 to 1.0
+pygame.mixer.music.set_volume(1.0)
 
-    try:
+# Init pyAudio
+format = pyaudio.paInt16
+audio = pyaudio.PyAudio()
 
-        # Make a list of .mid files in the current directory and all subdirectories
-        matches = ["output.mid"]
-        # for root, dirnames, filenames in os.walk("./"):
-        #     for filename in fnmatch.filter(filenames, '*.mid'):
-        #         matches.append(os.path.join(root, filename))
+try:
 
-        # Play each song in the list
-        for song in matches:
+    # Make a list of .mid files in the current directory and all subdirectories
+    matches = ["output.mid"]
+    # for root, dirnames, filenames in os.walk("./"):
+    #     for filename in fnmatch.filter(filenames, '*.mid'):
+    #         matches.append(os.path.join(root, filename))
 
-            # Create a filename with a .wav extension
-            file_name = os.path.splitext(os.path.basename(song))[0]
-            new_file = file_name + '.wav'
+    # Play each song in the list
+    for song in matches:
 
-            # Open the stream and start recording
-            stream = audio.open(format=format, channels=channels, rate=sample_rate, input=True,
-                                input_device_index=input_device, frames_per_buffer=buffer)
+        # Create a filename with a .wav extension
+        file_name = os.path.splitext(os.path.basename(song))[0]
+        new_file = file_name + '.wav'
 
-            # Playback the song
-            print("Playing " + file_name + ".mid\n")
-            play_music(song)
+        # Open the stream and start recording
+        stream = audio.open(format=format, channels=channels, rate=sample_rate, input=True,
+                            input_device_index=input_device, frames_per_buffer=buffer)
 
-            frames = []
+        # Playback the song
+        print("Playing " + file_name + ".mid\n")
+        play_music(song)
 
-            # Record frames while the song is playing
-            while pygame.mixer.music.get_busy():
-                frames.append(stream.read(buffer))
+        frames = []
 
-            # Stop recording
-            stream.stop_stream()
-            stream.close()
+        # Record frames while the song is playing
+        while pygame.mixer.music.get_busy():
+            frames.append(stream.read(buffer))
 
-            # Configure wave file settings
-            wave_file = wave.open(new_file, 'wb')
-            wave_file.setnchannels(channels)
-            wave_file.setsampwidth(audio.get_sample_size(format))
-            wave_file.setframerate(sample_rate)
+        # Stop recording
+        stream.stop_stream()
+        stream.close()
 
-            print("Saving " + new_file)
+        # Configure wave file settings
+        wave_file = wave.open(new_file, 'wb')
+        wave_file.setnchannels(channels)
+        wave_file.setsampwidth(audio.get_sample_size(format))
+        wave_file.setframerate(sample_rate)
 
-            # Write the frames to the wave file
-            wave_file.writeframes(b''.join(frames))
-            wave_file.close()
+        print("Saving " + new_file)
 
-            # Call FFmpeg to handle the MP3 conversion if desired
-            if do_ffmpeg_convert:
-                os.system('ffmpeg -i ' + new_file + ' -y -f mp3 -ab ' + str(mp3_bitrate) + 'k -ac ' + str(
-                    channels) + ' -ar ' + str(sample_rate) + ' -vn ' + file_name + '.mp3')
+        # Write the frames to the wave file
+        wave_file.writeframes(b''.join(frames))
+        wave_file.close()
 
-                # Delete the WAV file if desired
-                if do_wav_cleanup:
-                    os.remove(new_file)
+        # Call FFmpeg to handle the MP3 conversion if desired
+        if do_ffmpeg_convert:
+            os.system('ffmpeg -i ' + new_file + ' -y -f mp3 -ab ' + str(mp3_bitrate) + 'k -ac ' + str(
+                channels) + ' -ar ' + str(sample_rate) + ' -vn ' + file_name + '.mp3')
 
-        # End PyAudio
-        audio.terminate()
+            # Delete the WAV file if desired
+            if do_wav_cleanup:
+                os.remove(new_file)
 
-    except KeyboardInterrupt:
-        # if user hits Ctrl/C then exit
-        # (works only in console mode)
-        pygame.mixer.music.fadeout(1000)
-        pygame.mixer.music.stop()
-        raise SystemExit
+    # End PyAudio
+    audio.terminate()
+
+except KeyboardInterrupt:
+    # if user hits Ctrl/C then exit
+    # (works only in console mode)
+    pygame.mixer.music.fadeout(1000)
+    pygame.mixer.music.stop()
+    raise SystemExit

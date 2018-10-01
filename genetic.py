@@ -2,14 +2,28 @@ from __future__ import division
 import random
 from deap import creator, base, tools, algorithms
 import os
+import time
 import config
-
-
-
+import melody
+import write
+import miditotxt
+import discriminator
 
 
 def evaluate(individual):
-    return sum(individual)/config.IND_SIZE,
+    global tim
+    config.listToConfig(individual)
+    config.init()
+    x = 0
+    for i in range(config.evaluationToAverage):
+        tim += time.process_time()
+        melody.generate()
+        write.write([melody.melody], [melody.rhythm])
+        write.save()
+        track = miditotxt.rewrite('output.mid')
+        tim -= time.process_time()
+        x += discriminator.evaluate(track)
+    return x/config.evaluationToAverage,
 
 
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -30,9 +44,9 @@ toolbox.register("evaluate", evaluate)
 if not os.path.exists("geneticresults/"):
     os.makedirs("geneticresults/")
 
-def main():
-    pop = toolbox.population(n=50)
-    CXPB, MUTPB, NGEN = 0.5, 0.2, 100
+def evolve():
+    pop = toolbox.population(n=config.geneticPopulationSize)
+    CXPB, MUTPB, NGEN = config.geneticCXPB, config.geneticMUTPB, config.geneticNGEN
 
     # Evaluate the entire population
     fitnesses = map(toolbox.evaluate, pop)
@@ -43,7 +57,7 @@ def main():
         # Select the next generation individuals
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
-        offspring = map(toolbox.clone, offspring)
+        offspring = list(map(toolbox.clone, offspring))
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
@@ -75,22 +89,23 @@ def main():
 
 
 def autorun():
-    print "Genetics started"
-    pop = main()
+    global tim
+    tim -= time.process_time()
+    pop = evolve()
     maximum = -1
     maxIndividual = []
     for i in pop:
-        if maximum < evaluate(i):
-            maximum = evaluate(i)
+        if maximum < evaluate(i)[0]:
+            maximum = evaluate(i)[0]
             maxIndividual = i
-    print maximum
+    print(maximum)
     f = open("geneticresults/%d.txt" % len([name for name in os.listdir('geneticresults/')
                                             if os.path.isfile('geneticresults/' + name)]), "w+")
     for i in maxIndividual:
         f.write("%f\n" % i)
 
     config.listToConfig(maxIndividual)
-    print "Genetics done"
+    tim += time.process_time()
 
 
 def load(i):
@@ -100,6 +115,6 @@ def load(i):
                                                 if os.path.isfile('geneticresults/' + name)]) + i), "r")
     else:
         f = open("geneticresults/%d.txt" % i, "r")
-    indidvidual = f.read().splitlines()
+    indidvidual = list(map(float, f.read().splitlines()))
     config.listToConfig(indidvidual)
 
